@@ -1,3 +1,11 @@
+This is a fork of the original extension from Mossop that just fixes the icon problem.  
+It gets the icon URLs from google automatically, but also allows the user to set a custom URL.  
+The XPI that can be installed into Thunderbird is in the releases tab.
+
+The original project is not mantained anymore. Part of the original README follows below.
+
+---
+
 WebApp Tabs
 ===========
 
@@ -26,24 +34,7 @@ The main goals are:
 * The webapp should behave as well in Thunderbird as it would if opened in
   Firefox
 
-Testing
--------
-
-All fixes should include appropriate automated testing. In order to run the unit
-tests the mozbase submodule must first be pulled with `git submodule init` and
-`git submodule update`. Then running `python runtests.py` should run the tests
-and output any failures.
-
-Building
---------
-
-To build an XPI that can be installed into Thunderbird just run the `build.sh`
-command and it will output `webapptabs.xpi` into the current directory. **This
-will update any existing file without warning.**
-
-Contributing
+License
 ------------
 
-As always feel free to fork. This project is MPL/GPL/LGPL tri-licensed. The
-issues list contains all the things I know I want to fix, if you have other
-ideas then let's talk.
+As always feel free to fork. This project is MPL/GPL/LGPL tri-licensed.
