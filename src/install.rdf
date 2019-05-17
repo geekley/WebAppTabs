@@ -3,7 +3,7 @@
    - License, v. 2.0. If a copy of the MPL was not distributed with this file,
    - You can obtain one at http://mozilla.org/MPL/2.0/.  -->
 
-<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
   <Description about="urn:mozilla:install-manifest">
     <em:id>webapptabs@fractalbrew.com</em:id>
@@ -11,7 +11,7 @@
     <em:optionsURL>chrome://webapptabs/content/config.xul</em:optionsURL>
 
     <em:name>WebApp Tabs</em:name>
-    <em:version>3.0a1-icon-fixed</em:version>
+    <em:version>2.1.1-icon-fixed</em:version>
     <em:creator>Dave Townsend</em:creator>
     <em:contributor>David Ascher (original code), geekley (icon fix)</em:contributor>
     <em:description>Load WebApps into tabs in Thunderbird</em:description>

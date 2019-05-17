@@ -53,10 +53,6 @@ const OverlayManager = {
     OverlayManagerInternal.addCategory(aCategory, aEntry, aValue);
   },
 
-  addPreference: function(aName, aValue) {
-    OverlayManagerInternal.addPreference(aName, aValue);
-  },
-
   getScriptContext: function(aWindow, aScriptURL) {
     return OverlayManagerInternal.getScriptContext(aWindow, aScriptURL);
   },
@@ -73,7 +69,6 @@ const OverlayManagerInternal = {
   components: [],
   categories: [],
   contracts: [],
-  preferences: [],
 
   init: function() {
     LOG("init");
@@ -93,11 +88,8 @@ const OverlayManagerInternal = {
 
       let cm = Cc["@mozilla.org/categorymanager;1"].
                getService(Ci.nsICategoryManager);
-      this.categories.forEach(function([aCategory, aEntry, aOldValue]) {
-        if (aOldValue)
-          cm.addCategoryEntry(aCategory, aEntry, aOldValue, false, true);
-        else
-          cm.deleteCategoryEntry(aCategory, aEntry, false);
+      this.categories.forEach(function([aCategory, aEntry]) {
+        cm.deleteCategoryEntry(aCategory, aEntry, false);
       });
 
       this.components.forEach(function(aCid) {
@@ -107,13 +99,6 @@ const OverlayManagerInternal = {
 
       this.contracts.forEach(function([aContract, aCid]) {
         Cm.registerFactory(aCid, null, aContract, null);
-      });
-
-      this.preferences.forEach(function([aName, aType, aValue]) {
-        if (aValue === null)
-          Services.prefs.clearUserPref(aName);
-        else
-          Services.prefs["set" + aType](aName, aValue);
       });
     }
     catch (e) {
@@ -412,33 +397,8 @@ const OverlayManagerInternal = {
   addCategory: function(aCategory, aEntry, aValue) {
     let cm = Cc["@mozilla.org/categorymanager;1"].
              getService(Ci.nsICategoryManager);
-    let oldValue = null;
-    try {
-      oldValue = cm.getCategoryEntry(aCategory, aEntry);
-    }
-    catch (e) { }
     cm.addCategoryEntry(aCategory, aEntry, aValue, false, true);
-    this.categories.push([aCategory, aEntry, oldValue]);
-  },
-
-  addPreference: function(aName, aValue) {
-    let oldValue = null;
-
-    let type = "CharPref";
-    switch (typeof aValue) {
-    case "number":
-      type = "IntPref";
-      break;
-    case "boolean":
-      type = "BoolPref";
-      break;
-    }
-
-    if (Services.prefs.getPrefType(aName) != Ci.nsIPrefBranch.PREF_INVALID)
-      oldValue = Services.prefs["get" + type](aName);
-
-    Services.prefs["set" + type](aName, aValue);
-    this.preferences.push([aName, type, oldValue]);
+    this.categories.push([aCategory, aEntry]);
   },
 
   getScriptContext: function(aDOMWindow, aScriptURL) {

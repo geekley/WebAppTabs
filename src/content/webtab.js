@@ -40,9 +40,9 @@ const webtabs = {
     document.getElementById("mailContext").addEventListener("popupshowing", this, false);
 
     this.backButton = document.getElementById("webapptabs-context-back")
-    this.backButton.addEventListener("command", this.onBackClick.bind(this), false);
+    this.backButton.addEventListener("command", this, false);
     this.forwardButton = document.getElementById("webapptabs-context-forward")
-    this.forwardButton.addEventListener("command", this.onForwardClick.bind(this), false);
+    this.forwardButton.addEventListener("command", this, false);
 
     this.oldOnBeforeLinkTraversal = MsgStatusFeedback.onBeforeLinkTraversal;
     MsgStatusFeedback.onBeforeLinkTraversal = this.onBeforeLinkTraversal.bind(this);
@@ -74,6 +74,8 @@ const webtabs = {
 
     MsgStatusFeedback.onBeforeLinkTraversal = this.oldOnBeforeLinkTraversal;
 
+    this.backButton.removeEventListener("command", this, false);
+    this.forwardButton.removeEventListener("command", this, false);
     document.getElementById("mailContext").removeEventListener("popupshowing", this, false);
 
     let container = document.getElementById("tabpanelcontainer");
@@ -100,12 +102,37 @@ const webtabs = {
   },
 
   updateWebAppButtons: function() {
-    while (this.buttonContainer.lastChild)
-      this.buttonContainer.removeChild(this.buttonContainer.lastChild);
+    let before = this.buttonContainer.firstChild;
 
+    // Loop through all webapps, for each either move it to the current position
+    // or create it
     ConfigManager.webappList.forEach(function(aDesc) {
-      this.createWebAppButton(aDesc, null);
+      if (before) {
+        // Common case is the button will be the next in the list
+        if (aDesc.id == before.id) {
+          before = before.nextSibling;
+          return;
+        }
+
+        let found = before.nextSibling;
+        while (found && found.id != aDesc.id)
+          found = found.nextSibling;
+        if (found) {
+          found.parentNode.insertBefore(found, before);
+          return;
+        }
+      }
+
+      // Webapp doesn't exist, create it and put it in the right place
+      let button = this.createWebAppButton(aDesc, before);
     }, this);
+
+    // Remove any remaining buttons
+    while (before) {
+      let next = before.nextSibling;
+      this.removeWebAppButton(before.desc);
+      before = next;
+    }
   },
 
   createWebAppButton: function(aDesc, aBefore) {
@@ -309,6 +336,12 @@ const webtabs = {
       return newTarget;
     }
 
+    if (aLinkURI.scheme == "javascript") {
+      logResult("", "Javascript load");
+      targetWin.location = aLinkURI.spec;
+      return "";
+    }
+
     let targetDesc = ConfigManager.getWebAppForURL(aLinkURI);
 
     // If this is a load of the same webapp then allow it to continue
@@ -339,14 +372,14 @@ const webtabs = {
   // nsIBrowserDOMWindow implementation
   openURI: function(aURI, aOpener, aWhere, aContext) {
     function logResult(aReason) {
-      LOG("openURI from " + (aOpener ? aOpener.top.document.documentURIObject.spec : null) +
+      LOG("openURI from " + (aOpener ? aOpener.document.documentURIObject.spec : null) +
           " - " + aReason);
     }
 
     // We don't know what the target URL is at this point. If the opener is a
     // webapp then open the link in a new browser, wait for it to be taken over
     // by the content policy
-    let desc = ConfigManager.getWebAppForURL(aOpener.top.document.documentURIObject);
+    let desc = ConfigManager.getWebAppForURL(aOpener.document.documentURIObject);
     if (desc) {
       let browser = document.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
                                              "browser");
@@ -376,6 +409,12 @@ const webtabs = {
         break;
       case "click":
         this.onContentClick(aEvent);
+        break;
+      case "command":
+        if (aEvent.target == this.backButton)
+          this.onBackClick(aEvent);
+        else
+          this.onForwardClick(aEvent);
         break;
       }
     }
@@ -431,21 +470,20 @@ const webtabs = {
           if (aState & Ci.nsIWebProgressListener.STATE_IS_NETWORK)
             aTabInfo.browser.removeProgressListener(listener);
 
+          /*
           if (aState & Ci.nsIWebProgressListener.STATE_IS_REQUEST) {
             let icon = aTabInfo.tabNode.getAttribute("image");
             if (!icon)
               return;
 
             let webapp = ConfigManager.getWebAppForURL(aTabInfo.browser.contentDocument.documentURIObject);
-            if (!webapp)
-              return;
-
             webapp.icon = icon;
             ConfigManager.persistPrefs();
 
             let button = document.getElementById(webapp.id);
             button.setAttribute("image", webapp.icon);
           }
+          */
         },
 
         onProgressChange: function() { },
