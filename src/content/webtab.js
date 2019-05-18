@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://gre/modules/NetUtil.jsm");
-Components.utils.import("resource://webapptabs/modules/LogManager.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+ChromeUtils.import("resource://webapptabs/modules/LogManager.jsm");
 LogManager.createLogger(this, "webtab");
-Components.utils.import("resource://webapptabs/modules/ConfigManager.jsm");
+ChromeUtils.import("resource://webapptabs/modules/ConfigManager.jsm");
 
 var Cc = Components.classes;
 var Ci = Components.interfaces;

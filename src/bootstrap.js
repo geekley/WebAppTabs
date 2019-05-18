@@ -85,7 +85,7 @@ function install(aParams, aReason) {
 
 function startup(aParams, aReason) {
   // Register the resource://webapptabs/ mapping
-  Components.utils.import("resource://gre/modules/Services.jsm");
+  ChromeUtils.import("resource://gre/modules/Services.jsm");
   let res = Services.io.getProtocolHandler("resource").QueryInterface(Ci.nsIResProtocolHandler);
   res.setSubstitution("webapptabs", aParams.resourceURI);
 
@@ -93,7 +93,7 @@ function startup(aParams, aReason) {
   Components.manager.addBootstrappedManifestLocation(aParams.installPath);
 
   // Load the overlay manager
-  Components.utils.import("resource://webapptabs/modules/OverlayManager.jsm");
+  ChromeUtils.import("resource://webapptabs/modules/OverlayManager.jsm");
 
   // Add a policy to handle redirecting webapp loads
   OverlayManager.addComponent("{bd71af62-1b21-4f3a-829e-5254ec7da7f6}",
@@ -104,7 +104,7 @@ function startup(aParams, aReason) {
 
   OverlayManager.addOverlays(OVERLAYS);
 
-  Components.utils.import("resource://webapptabs/modules/ConfigManager.jsm");
+  ChromeUtils.import("resource://webapptabs/modules/ConfigManager.jsm");
   Services.obs.addObserver(HttpObserver, "http-on-modify-request", false);
 }
 

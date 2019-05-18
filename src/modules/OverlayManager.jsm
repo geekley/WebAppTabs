@@ -4,8 +4,9 @@
 
 const EXPORTED_SYMBOLS = ["OverlayManager"];
 
-Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://webapptabs/modules/LogManager.jsm");
+Components.utils.importGlobalProperties(["XMLHttpRequest"]);
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://webapptabs/modules/LogManager.jsm");
 LogManager.createLogger(this, "OverlayManager");
 
 const Cc = Components.classes;
@@ -138,7 +139,8 @@ const OverlayManagerInternal = {
 
     this.windowEntryMap.delete(aWindowEntry.window);
 
-    for (let [,sandbox] in Iterator(aWindowEntry.scripts)) {
+    for (let scriptURL in aWindowEntry.scripts) {
+      let sandbox = aWindowEntry.scripts[scriptURL];
       try {
         if ("OverlayListener" in sandbox && "unload" in sandbox.OverlayListener)
           sandbox.OverlayListener.unload();
@@ -189,8 +191,7 @@ const OverlayManagerInternal = {
     LOG("Loading document overlay " + aDocumentURL);
 
     // TODO make this async
-    let xhr = Cc["@mozilla.org/xmlextras/xmlhttprequest;1"].
-              createInstance(Ci.nsIXMLHttpRequest);
+    let xhr = new XMLHttpRequest();
     xhr.open("GET", aDocumentURL, false);
     xhr.send();
 
@@ -200,7 +201,7 @@ const OverlayManagerInternal = {
 
     let targetDoc = aWindowEntry.window.document;
 
-    function walkDocumentNodes(aDocument) {
+    function* walkDocumentNodes(aDocument) {
       let node = aDocument.documentElement;
 
       while (node) {
@@ -224,7 +225,7 @@ const OverlayManagerInternal = {
       }
     }
 
-    function elementChildren(aElement) {
+    function* elementChildren(aElement) {
       let node = aElement.firstChild;
       while (node) {
         let currentNode = node;
@@ -236,13 +237,13 @@ const OverlayManagerInternal = {
       }
     }
 
-    for (let node in walkDocumentNodes(overlayDoc)) {
+    for (let node of walkDocumentNodes(overlayDoc)) {
       // Remove the node if it is an empty text node
       if (node.nodeType == Ci.nsIDOMNode.TEXT_NODE && node.nodeValue.trim() == "")
         node.parentNode.removeChild(node);
     }
 
-    for (let containerElement in elementChildren(overlayDoc.documentElement)) {
+    for (let containerElement of elementChildren(overlayDoc.documentElement)) {
       if (!containerElement.id)
         continue;
 
@@ -252,7 +253,7 @@ const OverlayManagerInternal = {
 
       // TODO apply attributes to the target element
 
-      for (let newElement in elementChildren(containerElement)) {
+      for (let newElement of elementChildren(containerElement)) {
         let insertBefore = null;
 
         if (newElement.hasAttribute("insertbefore")) {
@@ -309,7 +310,7 @@ const OverlayManagerInternal = {
     try {
       // First check over the new overlays, merge them into the master list
       // and if any are for already tracked windows apply them
-      for (let [windowURL, newOverlays] in Iterator(aOverlayList)) {
+      for (let windowURL in aOverlayList) {
         let newOverlays = aOverlayList[windowURL];
 
         if (!(windowURL in this.overlays))

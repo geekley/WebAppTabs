@@ -4,9 +4,9 @@
 
 const EXPORTED_SYMBOLS = ["ConfigManager"];
 
-Components.utils.import("resource://gre/modules/Services.jsm");
-Components.utils.import("resource://gre/modules/NetUtil.jsm");
-Components.utils.import("resource://webapptabs/modules/LogManager.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+ChromeUtils.import("resource://webapptabs/modules/LogManager.jsm");
 LogManager.createLogger(this, "ConfigManager");
 
 const Cc = Components.classes;

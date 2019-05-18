@@ -2,11 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this file,
  * You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-Components.utils.import("resource://gre/modules/XPCOMUtils.jsm");
-Components.utils.import("resource://webapptabs/modules/LogManager.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+ChromeUtils.import("resource://webapptabs/modules/LogManager.jsm");
 LogManager.createLogger(this, "nsContentPolicy");
-Components.utils.import("resource://webapptabs/modules/ConfigManager.jsm");
-Components.utils.import("resource://webapptabs/modules/OverlayManager.jsm");
+ChromeUtils.import("resource://webapptabs/modules/ConfigManager.jsm");
+ChromeUtils.import("resource://webapptabs/modules/OverlayManager.jsm");
 
 const Cc = Components.classes;
 const Ci = Components.interfaces;
@@ -78,7 +78,7 @@ nsContentPolicy.prototype = {
     // Otherwise load it externally
     Cc["@mozilla.org/uriloader/external-protocol-service;1"].
     getService(Components.interfaces.nsIExternalProtocolService).
-    loadUrl(aContentLocation);
+    loadURI(aContentLocation);
 
     logResult("REJECT", "Loaded externally");
     return Ci.nsIContentPolicy.REJECT_SERVER;

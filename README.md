@@ -1,6 +1,11 @@
-This is a fork of the original extension from Mossop that just fixes the icon problem.  
-It gets the icon URLs from google automatically, but also allows the user to set a custom URL.  
+This is a fork of the original extension that fixes some problems.  
+It gets the favicon URLs from google automatically, but also allows the user to set a custom URL.  
 The XPI that can be installed into Thunderbird is in the releases tab.
+Updated to be compatible with Thunderbird 60.*.
+
+**Known Bugs:**
+- Sometimes tabs won't close while the extension is enabled.
+- Sometimes tabs are "locked" on the page, and you can't go to a different URL.
 
 The original project is not mantained anymore. Part of the original README follows below.
 
@@ -37,4 +42,4 @@ The main goals are:
 License
 ------------
 
-As always feel free to fork. This project is MPL/GPL/LGPL tri-licensed.
+As always feel free to fork. This project is licensed under MPL-2.0.
